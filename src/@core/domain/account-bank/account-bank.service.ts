@@ -1,3 +1,4 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { CreateAccountBankDto } from 'src/accounts-bank/dto/create-account-bank.dto';
 import { CreateMovementDto } from 'src/accounts-bank/dto/create-movement.dto';
 import { CreateTransferDto } from 'src/accounts-bank/dto/create-transfer.dto';
@@ -15,7 +16,13 @@ export class AccountBankService {
     );
 
     if (hasAccount) {
-      throw new Error('Account already exists');
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'Account already exists',
+        },
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     const accountBank = new AccountBank(0, createAccountBankDto.account_number);
@@ -37,15 +44,33 @@ export class AccountBankService {
       );
 
     if (!accountDestination || !accountSource) {
-      throw new Error('Account not found');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Account not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     if (this.validateSameAccount(createTransferDto)) {
-      throw new Error('Accounts cannot be the same');
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'Accounts cannot be the same',
+        },
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     if (this.validateBalance(accountSource, createTransferDto.amount)) {
-      throw new Error('Account source has no balance');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_ACCEPTABLE,
+          error: 'Account source has no balance',
+        },
+        HttpStatus.NOT_ACCEPTABLE,
+      );
     }
 
     const transferService = new TransferService();
@@ -70,7 +95,13 @@ export class AccountBankService {
     );
 
     if (!account) {
-      throw new Error('Account not found');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Account not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     account.credit(createMovementDto.amount);
@@ -84,11 +115,23 @@ export class AccountBankService {
     );
 
     if (!account) {
-      throw new Error('Account not found');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Account not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     if (this.validateBalance(account, createMovementDto.amount)) {
-      throw new Error('Account has no balance');
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_ACCEPTABLE,
+          error: 'Account has no balance',
+        },
+        HttpStatus.NOT_ACCEPTABLE,
+      );
     }
 
     account.debit(createMovementDto.amount);

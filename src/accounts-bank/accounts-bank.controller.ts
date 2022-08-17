@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AccountBankService } from '../@core/domain/account-bank/account-bank.service';
 import { CreateAccountBankDto } from './dto/create-account-bank.dto';
 import { CreateMovementDto } from './dto/create-movement.dto';
 import { CreateTransferDto } from './dto/create-transfer.dto';
 import { ReturnTransferDto } from './dto/return-transfer.dto';
 
+@ApiTags('AccountBank')
 @Controller('accounts-bank')
 export class AccountsBankController {
   constructor(private readonly accountBankService: AccountBankService) {}
